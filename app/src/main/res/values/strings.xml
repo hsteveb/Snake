@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Animations</string>
+    <string name="start">Start</string>
+    <string name="resume">Resume</string>
+    <string name="stop">Stop</string>
+    <string name="pause">Pause</string>
+    <string name="restart">Restart</string>
+    <string name="play">Play</string>
+    <string name="leaderboard">Leaderboard</string>
+    <string name="Settings">Settings</string>
+    <string name="test">Test</string>
+    <string name="tabname">ABC</string>
+    <string name="tabscore">Score</string>
+    <string name="initialscore">Score: 0</string>
+</resources>

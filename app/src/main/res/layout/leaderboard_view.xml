@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/transparent"
+    android:layout_marginLeft="65dp"
+    android:layout_marginRight="65dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/leaderboard_view_position"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/lilitaone_regular"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:gravity="start"
+            tools:text="@string/test"/>
+
+        <TextView
+            android:id="@+id/leaderboard_view_alias"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/lilitaone_regular"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            tools:text="@string/test"/>
+
+        <TextView
+            android:id="@+id/leaderboard_view_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/lilitaone_regular"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:gravity="end"
+            tools:text="@string/test"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/white"></LinearLayout>
+
+</LinearLayout>

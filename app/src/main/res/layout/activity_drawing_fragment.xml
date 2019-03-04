@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/darkGreen3">
+
+    <TextView
+        android:id="@+id/drawing_fragment_time_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/lilitaone_regular"
+        android:background="@null"
+        android:text="@string/initialscore"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:layout_gravity="left"
+        android:gravity="start"
+        android:elevation="1dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:alpha="0"/>
+
+    <Button
+        android:id="@+id/drawing_fragment_pause_restart_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/lilitaone_regular"
+        android:background="@null"
+        android:text="@string/pause"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:layout_gravity="right"
+        android:gravity="end"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/drawing_fragment_start_resume_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:background="@null"
+        android:fontFamily="@font/lilitaone_regular"
+        android:text="@string/start"
+        android:textColor="@color/white"
+        android:textSize="75sp"/>
+
+    <com.bignerdranch.android.animations.DrawingView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/drawing_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.bignerdranch.android.animations.DrawingView>
+
+    <FrameLayout
+        android:id="@+id/activity_drawing_fragment_framelayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></FrameLayout>
+
+</FrameLayout>
