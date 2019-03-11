@@ -12,7 +12,7 @@ public class DbSchema {
 
     public static class DbEntry implements BaseColumns
     {
-        public static final String TABLE = "highscore";
+        public static final String TABLE = "highscores";
         public static final String NAME = "name";
         public static final String SCORE = "score";
     }

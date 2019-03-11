@@ -1,6 +1,5 @@
 package com.bignerdranch.android.animations;
 
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -13,14 +12,15 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.bignerdranch.android.animations.Model.Score;
+import com.bignerdranch.android.animations.Model.SnakeDb;
+import com.bignerdranch.android.animations.Model.PlayerScore;
 
 import java.util.List;
 
 public class LeaderboardFragment extends Fragment implements View.OnClickListener {
 
     private RecyclerView mRecyclerView;
-    private DummyScores mDummyScores;
+    private SnakeDb mSnakeDb;
     private TabLayout mTabLayout;
     private ImageButton mReturnImageButton;
 
@@ -28,7 +28,7 @@ public class LeaderboardFragment extends Fragment implements View.OnClickListene
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDummyScores = new DummyScores();
+        mSnakeDb = new SnakeDb();
     }
 
     @Nullable
@@ -38,7 +38,7 @@ public class LeaderboardFragment extends Fragment implements View.OnClickListene
         View v = inflater.inflate(R.layout.leaderboard_fragment, container, false);
         mRecyclerView = v.findViewById(R.id.leaderboard_fragment_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.setAdapter(new RecyclerViewAdapter(mDummyScores.getScores()));
+        mRecyclerView.setAdapter(new RecyclerViewAdapter(mSnakeDb.getScores()));
 
         mTabLayout = v.findViewById(R.id.leaderboard_fragment_tablayout);
         mTabLayout.setTabTextColors(getResources().getColor(R.color.darkRed2), getResources().getColor(R.color.darkRed2));
@@ -53,8 +53,8 @@ public class LeaderboardFragment extends Fragment implements View.OnClickListene
 
     private class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewHolder>
     {
-        private List<Score> mDummyScores;
-        public RecyclerViewAdapter(List<Score> dummyScores)
+        private List<PlayerScore> mDummyScores;
+        public RecyclerViewAdapter(List<PlayerScore> dummyScores)
         {
             mDummyScores = dummyScores;
         }
@@ -88,7 +88,7 @@ public class LeaderboardFragment extends Fragment implements View.OnClickListene
             mTime = view.findViewById(R.id.leaderboard_view_time);
         }
 
-        public void BindHolder(Score score, int position)
+        public void BindHolder(PlayerScore score, int position)
         {
             mPosition.setText(String.format("%02d", position));
             mName.setText(score.getName());

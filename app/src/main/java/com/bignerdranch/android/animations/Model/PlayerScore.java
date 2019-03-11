@@ -1,10 +1,10 @@
 package com.bignerdranch.android.animations.Model;
 
-public class Score {
+public class PlayerScore {
 
     private String name, score;
 
-    public Score(String name, String score)
+    public PlayerScore(String name, String score)
     {
         this.score = score;
         this.name = name;

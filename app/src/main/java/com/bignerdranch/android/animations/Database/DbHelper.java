@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DbHelper extends SQLiteOpenHelper {
 
     private static final int DB_VERSION = 1;
-    private static final String DB_NAME = "snake_highscore.db";
+    private static final String DB_NAME = "snake.db";
 
 
     public DbHelper(Context context) {
@@ -22,15 +22,14 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         sqLiteDatabase.execSQL("CREATE TABLE " + DbSchema.DbEntry.TABLE + " (" +
                 DbSchema.DbEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                DbSchema.DbEntry.NAME + ", " +
-                DbSchema.DbEntry.SCORE +
+                DbSchema.DbEntry.NAME + "TEXT, " +
+                DbSchema.DbEntry.SCORE + "INT" +
         ")");
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
     }
 
 

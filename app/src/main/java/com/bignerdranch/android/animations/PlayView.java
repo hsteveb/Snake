@@ -6,13 +6,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -26,7 +23,7 @@ import java.util.Random;
 
 /* The entire game engine is found here but can change in the future to make it easier to read if we need to.
  */
-public class DrawingView extends SurfaceView implements GestureDetector.OnGestureListener, Runnable, SurfaceHolder.Callback {
+public class PlayView extends SurfaceView implements GestureDetector.OnGestureListener, Runnable, SurfaceHolder.Callback {
 
 
     private static final String TAG = "DrawingView";
@@ -45,12 +42,12 @@ public class DrawingView extends SurfaceView implements GestureDetector.OnGestur
     private Fragment mFragment;
 
 
-    public DrawingView(Context context) {
+    public PlayView(Context context) {
         this(context, null);
         mContext = context;
     }
 
-    public DrawingView(Context context, @Nullable AttributeSet attrs) {
+    public PlayView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         mContext = context;

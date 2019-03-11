@@ -10,28 +10,23 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.bignerdranch.android.animations.Model.Score;
-
 /*The UI part of the game is found in this fragment where the buttons are controlled.
  */
-public class DrawingFragment extends Fragment implements View.OnClickListener, InfoInterface{
+public class PlayFragment extends Fragment implements View.OnClickListener, InfoInterface{
 
-    private static final String TAG = "DrawingFragment";
+    private static final String TAG = "PlayFragment";
     private boolean mStartPause;
     private int score;
 
     private Button mStartButton, mRestartButton;
-    private DrawingView mDrawingView;
+    private PlayView mPlayView;
     private FrameLayout mFrameLayout;
     private TextView mTimerScoreTextView;
     private ObjectAnimator mStartButtonAnimator, mScoreTextViewAnimator, mRestartButtonAnimator, mPauseBackgroundAnimator;
@@ -47,14 +42,21 @@ public class DrawingFragment extends Fragment implements View.OnClickListener, I
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.activity_drawing_fragment, container, false);
 
-        mDrawingView = v.findViewById(R.id.drawing_view);
+        mPlayView = v.findViewById(R.id.drawing_view);
         mFrameLayout = v.findViewById(R.id.activity_drawing_fragment_framelayout);
+
+        /*Buttons*/
         mStartButton = v.findViewById(R.id.drawing_fragment_start_resume_button);
         mRestartButton = v.findViewById(R.id.drawing_fragment_pause_restart_button);
+
+
+        /*TextViews*/
         mTimerScoreTextView = v.findViewById(R.id.drawing_fragment_time_text_view);
+
+        /*setups*/
         mStartButton.setOnClickListener(this);
         mRestartButton.setOnClickListener(this);
-        mDrawingView.setupitem(mRestartButton, this);
+        mPlayView.setupitem(mRestartButton, this);
 
         return v;
     }
@@ -82,11 +84,14 @@ public class DrawingFragment extends Fragment implements View.OnClickListener, I
                             //countdown--;
                         }
 
+                        /*This function will setup two animations so that ScoreTextView and RestartButton show up
+                          when the countdown is over.
+                         */
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
                             Log.d(TAG, "testing animation");
-                            mDrawingView.startgame();
+                            mPlayView.startgame();
 
                             mScoreTextViewAnimator = ObjectAnimator.ofFloat(mTimerScoreTextView, "alpha", 0 , 1);
                             mScoreTextViewAnimator.setDuration(500);
@@ -120,8 +125,9 @@ public class DrawingFragment extends Fragment implements View.OnClickListener, I
                             mStartButton.setVisibility(View.INVISIBLE);
                         }
                     });
-                    mStartButtonAnimator.setDuration(1000);
+                    mStartButtonAnimator.setDuration(1100);
                     mStartButtonAnimator.setRepeatCount(5);
+                    mStartButtonAnimator.setInterpolator(new AccelerateInterpolator(1.05f));
                     mStartButtonAnimator.setRepeatMode(ValueAnimator.RESTART);
                     mStartButtonAnimator.start();
 
@@ -151,7 +157,7 @@ public class DrawingFragment extends Fragment implements View.OnClickListener, I
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
-                            mDrawingView.resumegame();
+                            mPlayView.resumegame();
                             mStartButton.setVisibility(View.INVISIBLE);
                         }
                     });
@@ -167,7 +173,7 @@ public class DrawingFragment extends Fragment implements View.OnClickListener, I
             case R.id.drawing_fragment_pause_restart_button:
                 if(mRestartButton.getText().toString().equalsIgnoreCase(getResources().getString(R.string.pause)))
                 {
-                    mDrawingView.stopgame();
+                    mPlayView.stopgame();
 
                     mStartButton.setText(R.string.resume);
                     mStartButton.setAlpha(0);
@@ -206,7 +212,7 @@ public class DrawingFragment extends Fragment implements View.OnClickListener, I
                     mFrameLayout.setBackgroundColor(getResources().getColor(android.R.color.transparent));
                     mFrameLayout.setAlpha(1);
                     mRestartButton.setText(R.string.pause);
-                    mDrawingView.startgame();
+                    mPlayView.startgame();
                 }
 
                 break;
@@ -219,30 +225,24 @@ public class DrawingFragment extends Fragment implements View.OnClickListener, I
     public void info(int score) {
 
         this.score = score;
-        mTimerScoreTextView.setText(String.format("Score: %d", score));
-
+        mTimerScoreTextView.setText(String.format("PlayerScore: %d", score));
     }
 
     @Override
     public void reset() {
         mRestartButton.setText(R.string.restart);
         if(score > 0)
-            saveHighScore(score);
+        {
+            SaveScoreDialogFragment.create(score).show(getFragmentManager(), null);
+        }
     }
-
-
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        if(mDrawingView.playing())
-            mDrawingView.stopgame();
+        if(mPlayView.playing())
+            mPlayView.stopgame();
     }
 
-
-    private void saveHighScore(int score)
-    {
-        new ScoreDialogFragment().show(getFragmentManager(), null);
-    }
 }

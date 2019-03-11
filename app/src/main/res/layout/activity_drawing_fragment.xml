@@ -49,13 +49,13 @@
         android:textColor="@color/white"
         android:textSize="75sp"/>
 
-    <com.bignerdranch.android.animations.DrawingView
+    <com.bignerdranch.android.animations.PlayView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/drawing_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </com.bignerdranch.android.animations.DrawingView>
+    </com.bignerdranch.android.animations.PlayView>
 
     <FrameLayout
         android:id="@+id/activity_drawing_fragment_framelayout"

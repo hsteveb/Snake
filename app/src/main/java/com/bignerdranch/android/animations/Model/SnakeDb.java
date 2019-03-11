@@ -1,29 +1,29 @@
-package com.bignerdranch.android.animations;
+package com.bignerdranch.android.animations.Model;
 
-import com.bignerdranch.android.animations.Model.Score;
+import com.bignerdranch.android.animations.Model.PlayerScore;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /* dummy scores used to check if the leaderboard is working as it should.
  */
-public class DummyScores {
+public class SnakeDb {
 
-    private List<Score> mScores;
+    private List<PlayerScore> mScores;
 
 
-    public DummyScores()
+    public SnakeDb()
     {
         mScores = new ArrayList<>();
 
         for(int i = 0; i < 100; i++)
         {
-            Score score = new Score("ABC", "1:00:00");
+            PlayerScore score = new PlayerScore("ABC", "1:00:00");
             mScores.add(score);
         }
     }
 
-    public List<Score> getScores() {
+    public List<PlayerScore> getScores() {
         return mScores;
     }
 }

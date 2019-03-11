@@ -7,9 +7,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.FrameLayout;
 
-public class DrawingActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "DrawingActivity";
+    private static final String TAG = "MainActivity";
     private FrameLayout mFrameLayout;
 
     @Override
