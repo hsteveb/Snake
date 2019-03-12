@@ -15,6 +15,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.Button;
 
+import com.bignerdranch.android.animations.Model.Snake;
 import com.bignerdranch.android.animations.Shapes.Line;
 import com.bignerdranch.android.animations.Shapes.Pencil;
 
@@ -34,18 +35,13 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
     private boolean running, newswipe, newgame, killeditself;
     private int height, width, snakelength, coordinates, x , y, score;
     private Pencil fruit, snake;
+    private Snake mSnake;
     private Random mRandom, direction;
     private GestureDetectorCompat mCompat;
     private Direction mDirection;
     private Thread mThread;
     private SurfaceHolder mSurfaceHolder;
     private Fragment mFragment;
-
-
-    public PlayView(Context context) {
-        this(context, null);
-        mContext = context;
-    }
 
     public PlayView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -76,6 +72,7 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
 
     }
 
+    /*Checks the phone screen height and width and saves the values for later use*/
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
@@ -84,6 +81,7 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
         Log.d(TAG, "height: " + h + " width: " + w);
     }
 
+    /*draws the view of our game*/
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         Canvas canvas = mSurfaceHolder.lockCanvas();
