@@ -17,7 +17,7 @@ import android.widget.Button;
 
 import com.bignerdranch.android.animations.Model.Snake;
 import com.bignerdranch.android.animations.Shapes.Line;
-import com.bignerdranch.android.animations.Shapes.Pencil;
+import com.bignerdranch.android.animations.Model.Coordinates;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -30,11 +30,9 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
     private static final String TAG = "DrawingView";
     private Paint mBackgroundColor, shapecolor, fruitcolor;
     private Context mContext;
-    private ArrayList<Pencil> mPencilArrayList;
-    private ArrayList<Line>mLineArrayList;
     private boolean running, newswipe, newgame, killeditself;
-    private int height, width, snakelength, coordinates, x , y, score;
-    private Pencil fruit, snake;
+    private int height, width, mCoordinatesRange, x , y, score;
+    private Coordinates fruit;
     private Snake mSnake;
     private Random mRandom, direction;
     private GestureDetectorCompat mCompat;
@@ -47,14 +45,13 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
         super(context, attrs);
 
         mContext = context;
+        mSnake = new Snake();
         mBackgroundColor = new Paint();
         shapecolor = new Paint();
         fruitcolor = new Paint();
         mBackgroundColor.setColor(getResources().getColor(R.color.darkGreen3));
         shapecolor.setColor(getResources().getColor(R.color.darkRed5));
         fruitcolor.setColor(Color.BLUE);
-        mPencilArrayList = new ArrayList<>();
-        mLineArrayList = new ArrayList<>();
         running = false;
         newswipe = false;
         newgame = false;
@@ -67,7 +64,7 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
         mCompat = new GestureDetectorCompat(getContext(), this);
         mSurfaceHolder = getHolder();
         mSurfaceHolder.addCallback(this);
-        coordinates = 10;
+        mCoordinatesRange = 10;
         score = 0;
 
     }
@@ -78,7 +75,7 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
         super.onSizeChanged(w, h, oldw, oldh);
         width = w;
         height = h;
-        Log.d(TAG, "height: " + h + " width: " + w);
+        //Log.d(TAG, "height: " + h + " width: " + w);
     }
 
     /*draws the view of our game*/
@@ -101,8 +98,8 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
 
     }
 
-    /*Thread where the snake is given the initial coordinates and
-            where those coordinates are saved and displayed on the screen.
+    /*Thread where the snake is given the initial mCoordinatesRange and
+            where those mCoordinatesRange are saved and displayed on the screen.
             Invalidate is used to call onDraw again*/
     /*Variables x and y are used to update the position of the snake head while*/
     @Override
@@ -112,7 +109,7 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
         if(newgame)
         {
             fruit = fruitcoordinates();
-            snake = initialposition();
+            mSnake.initialPosition(width, height);
 
             mFragment.getActivity().runOnUiThread(new Runnable() {
                 @Override
@@ -121,10 +118,8 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
                 }
             });
 
-            //int x = mRandom.nextInt(height);
-            x = (int)snake.getX();
-            //int y = mRandom.nextInt(width);
-            y = (int)snake.getY();
+            x = mSnake.getSnakebodycoordinates().get(0).getX();
+            y = mSnake.getSnakebodycoordinates().get(0).getY();
 
             switch (direction.nextInt(4)) {
                 case 0:
@@ -155,28 +150,29 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
                         break;
                     canvas.save();
                     canvas.drawPaint(mBackgroundColor);
-                    canvas.drawCircle(fruit.getX(), fruit.getY(), 10, fruitcolor);
+                    canvas.drawCircle(fruit.getX(), fruit.getY(), 20, fruitcolor);
 
-                    Log.d(TAG, "size: " + mPencilArrayList.size());
+                    Log.d(TAG, "size: " + mSnake.getSnakebodycoordinates().size());
 
-                    if (mPencilArrayList.size() > 1 && newswipe) {
-                        Pencil prevpoint = mPencilArrayList.get(mPencilArrayList.size() - 2);
+                    /*This part prevents the snake from turning back around. It looks like he's going through himself*/
+                    if (mSnake.getSnakebodycoordinates().size() > 1 && newswipe) {
+                        Coordinates prevpoint = mSnake.getSnakebodycoordinates().get(mSnake.getSnakebodycoordinates().size() - 2);
                         Log.d(TAG, "x: " + x + " y: " + y + " prevx: " + prevpoint.getX() + "prevy: " + prevpoint.getY());
 
                         if (mDirection == Direction.up) {
-                            if (prevpoint.getX() == x && prevpoint.getY() == y - coordinates) {
+                            if (prevpoint.getX() == x && prevpoint.getY() == y - this.mCoordinatesRange) {
                                 mDirection = Direction.down;
                             }
                         } else if (mDirection == Direction.down) {
-                            if (prevpoint.getX() == x && prevpoint.getY() == y + coordinates)
+                            if (prevpoint.getX() == x && prevpoint.getY() == y + this.mCoordinatesRange)
                                 mDirection = Direction.up;
 
 
                         } else if (mDirection == Direction.left) {
-                            if (prevpoint.getX() == x - coordinates && prevpoint.getY() == y)
+                            if (prevpoint.getX() == x - this.mCoordinatesRange && prevpoint.getY() == y)
                                 mDirection = Direction.right;
                         } else {
-                            if (prevpoint.getX() == x + coordinates && prevpoint.getY() == y)
+                            if (prevpoint.getX() == x + this.mCoordinatesRange && prevpoint.getY() == y)
                                 mDirection = Direction.left;
                         }
 
@@ -184,64 +180,42 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
 
                     switch (mDirection) {
                         case up:
-                            y -= coordinates;
+                            y -= this.mCoordinatesRange;
                             break;
                         case left:
-                            x -= coordinates;
+                            x -= this.mCoordinatesRange;
                             break;
                         case down:
-                            y += coordinates;
+                            y += this.mCoordinatesRange;
                             break;
                         case right:
-                            x += coordinates;
+                            x += this.mCoordinatesRange;
                             break;
                         default:
                             break;
                     }
 
+                    Coordinates snakeHead = new Coordinates(x, y);
+                    mSnake.addSnakeCoordinates(x, y);
+                    mSnake.checkSnakeLength();
 
-                    Pencil pencil = new Pencil(x, y);
-                    mPencilArrayList.add(pencil);
-
-                    if (mPencilArrayList.size() == 1) {
-                        Line line = new Line(x, y, x, y);
-                        mLineArrayList.add(line);
-                    } else if (newswipe) {
-                        Line prev = mLineArrayList.get(mLineArrayList.size() - 1);
-
-                        Line line = new Line(prev.getX2(), prev.getY2(), x, y);
-                        mLineArrayList.add(line);
-                        newswipe = false;
-                    } else {
-                        Line line = mLineArrayList.get(mLineArrayList.size() - 1);
-                        line.setX2(x);
-                        line.setY2(y);
-                        mLineArrayList.add(0, line);
-                    }
-
-                    if (mPencilArrayList.size() > snakelength) {
-                        mPencilArrayList.remove(0);
-                    }
-
-
-                    if (mPencilArrayList.size() == 1) {
-                        Pencil point = mPencilArrayList.get(0);
+                    /* Puts the coordinates to make the snake body and also checks if the snake eats itself*/
+                    if (mSnake.getSnakebodycoordinates().size() == 1) {
+                        Coordinates point = mSnake.getSnakebodycoordinates().get(0);
                         canvas.drawCircle(point.getX(), point.getY(), 10, shapecolor);
                     } else {
-                        for (int i = 0; i < mPencilArrayList.size(); i++) {
-                            Pencil pencil1 = mPencilArrayList.get(i);
-                            canvas.drawCircle(pencil1.getX(), pencil1.getY(), 10, shapecolor);
+                        for (int i = 0; i < mSnake.getSnakebodycoordinates().size(); i++) {
+                            Coordinates coordinates1 = mSnake.getSnakebodycoordinates().get(i);
+                            canvas.drawCircle(coordinates1.getX(), coordinates1.getY(), 10, shapecolor);
 
-                            if (pencil.getX() == pencil1.getX() && pencil.getY() == pencil1.getY() && i != mPencilArrayList.size() - 1)
+                            if (snakeHead.getX() == coordinates1.getX() && snakeHead.getY() == coordinates1.getY() && i != mSnake.getSnakebodycoordinates().size() - 1)
                                 killeditself = true;
-                            //Line line = mLineArrayList.get(i);
-                            //canvas.drawLine(line.getX1(), line.getY1(), line.getX2(), line.getY2(), shapecolor);
                         }
 
                     }
 
-                    if (pencil.getX() >= (fruit.getX() - 10) && pencil.getX() <= (fruit.getX() + 10) && pencil.getY() >= (fruit.getY() - 10) && pencil.getY() <= (fruit.getY() + 10)) {
-                        snakelength += 5;
+                    if (snakeHead.getX() >= (fruit.getX() - 10) && snakeHead.getX() <= (fruit.getX() + 10) && snakeHead.getY() >= (fruit.getY() - 10) && snakeHead.getY() <= (fruit.getY() + 10)) {
+                        mSnake.addSnakeLength(5);
                         score += 5;
 
                         mFragment.getActivity().runOnUiThread(new Runnable() {
@@ -257,8 +231,9 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
                     canvas.restore();
                     mSurfaceHolder.unlockCanvasAndPost(canvas);
 
-                    if (pencil.getY() <= 0 && pencil.getX() >= 0 && pencil.getX() <= width || pencil.getX() <= 0 && pencil.getY() >= 0 && pencil.getY() <= height ||
-                            pencil.getY() >= height && pencil.getX() >= 0 && pencil.getX() <= width || pencil.getX() >= width && pencil.getY() >= 0 && pencil.getY() <= height)
+                    /*Checks to see if snake is out of bounds and if so it's pretty much dead*/
+                    if (snakeHead.getY() <= 0 && snakeHead.getX() >= 0 && snakeHead.getX() <= width || snakeHead.getX() <= 0 && snakeHead.getY() >= 0 && snakeHead.getY() <= height ||
+                            snakeHead.getY() >= height && snakeHead.getX() >= 0 && snakeHead.getX() <= width || snakeHead.getX() >= width && snakeHead.getY() >= 0 && snakeHead.getY() <= height)
                         killeditself = true;
 
                     if (killeditself) {
@@ -283,35 +258,28 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
 
     }
 
-
-    /*This method is used to position the snake in the middle of the screen*/
-    private Pencil initialposition()
-    {
-        return new Pencil(width/2, height/2);
-    }
-
     /*Used to put the fruit in a random spot on the screen*/
-    private Pencil fruitcoordinates()
+    private Coordinates fruitcoordinates()
     {
-        Pencil pencil = new Pencil(mRandom.nextInt(width), mRandom.nextInt(height));
-        while((pencil.getX() % coordinates) != 0 && (pencil.getY() % coordinates) != 0)
+        Coordinates coordinates = new Coordinates(mRandom.nextInt(width), mRandom.nextInt(height));
+        while((coordinates.getX() % this.mCoordinatesRange) != 0 && (coordinates.getY() % this.mCoordinatesRange) != 0)
         {
-            if((pencil.getX() % coordinates) != 0 && (pencil.getY() % coordinates) != 0)
+            if((coordinates.getX() % this.mCoordinatesRange) != 0 && (coordinates.getY() % this.mCoordinatesRange) != 0)
             {
-                pencil.setX(mRandom.nextInt(width));
-                pencil.setY(mRandom.nextInt(height));
+                coordinates.setX(mRandom.nextInt(width));
+                coordinates.setY(mRandom.nextInt(height));
             }
-            else if((pencil.getX() % coordinates) != 0)
+            else if((coordinates.getX() % this.mCoordinatesRange) != 0)
             {
-                pencil.setX(mRandom.nextInt(width));
+                coordinates.setX(mRandom.nextInt(width));
             }
             else
             {
-                pencil.setY(mRandom.nextInt(height));
+                coordinates.setY(mRandom.nextInt(height));
             }
         }
 
-        return pencil;
+        return coordinates;
     }
 
 
@@ -320,14 +288,8 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
     {
         if(!running)
         {
-            if(mPencilArrayList.size() > 0)
-            {
-                mPencilArrayList.clear();
-                mLineArrayList.clear();
-            }
-
+            mSnake.reset();
             score = 0;
-            snakelength = 20;
             newgame = true;
             running = true;
             mThread = new Thread(this);
@@ -343,7 +305,6 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
     {
         running = false;
         killeditself = false;
-
 
         try {
             mThread.join();
