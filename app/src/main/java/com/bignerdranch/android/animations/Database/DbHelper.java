@@ -23,7 +23,7 @@ public class DbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL("CREATE TABLE " + DbSchema.DbEntry.TABLE + " (" +
                 DbSchema.DbEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 DbSchema.DbEntry.NAME + "TEXT, " +
-                DbSchema.DbEntry.SCORE + "INT" +
+                DbSchema.DbEntry.SCORE + "TEXT" +
         ")");
 
     }

@@ -28,7 +28,7 @@ public class LeaderboardFragment extends Fragment implements View.OnClickListene
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mSnakeDb = new SnakeDb();
+        mSnakeDb = SnakeDb.getInstance(getContext());
     }
 
     @Nullable

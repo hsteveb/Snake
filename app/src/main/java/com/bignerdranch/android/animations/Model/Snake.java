@@ -1,30 +1,28 @@
 package com.bignerdranch.android.animations.Model;
 
-import com.bignerdranch.android.animations.Shapes.Pencil;
-
 import java.util.ArrayList;
 
 public class Snake {
 
     private int mSnakeLength;
 
-    private ArrayList<Pencil> mSnakeodyCoordinates;
+    private ArrayList<Coordinates> mSnakeodyCoordinates;
 
     public Snake()
     {
         mSnakeodyCoordinates= new ArrayList<>();
-        mSnakeLength = 5;
+        mSnakeLength = 20;
     }
 
-
+    /*This method is used to position the snake in the middle of the screen*/
     public void initialPosition(int width, int height)
     {
-        mSnakeodyCoordinates.add(new Pencil(width/2, height/2));
+        mSnakeodyCoordinates.add(new Coordinates(width/2, height/2));
     }
 
-    public void addSnakeCoordinate(int x, int y)
+    public void addSnakeCoordinates(int x, int y)
     {
-        mSnakeodyCoordinates.add(new Pencil(x, y));
+        mSnakeodyCoordinates.add(new Coordinates(x, y));
     }
 
     public void checkSnakeLength()
@@ -38,9 +36,19 @@ public class Snake {
         mSnakeLength += value;
     }
 
-    public ArrayList<Pencil> getSnakebodycoordinates() {
+    public void addSnakeCoordinates(Coordinates coordinates)
+    {
+        mSnakeodyCoordinates.add(coordinates);
+    }
+
+    public ArrayList<Coordinates> getSnakebodycoordinates() {
         return mSnakeodyCoordinates;
     }
 
 
+    public void reset()
+    {
+        mSnakeodyCoordinates.clear();
+        mSnakeLength = 20;
+    }
 }
