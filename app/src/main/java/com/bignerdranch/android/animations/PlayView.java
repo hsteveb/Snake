@@ -20,6 +20,8 @@ import com.bignerdranch.android.animations.Shapes.Line;
 import com.bignerdranch.android.animations.Model.Coordinates;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /* The entire game engine is found here but can change in the future to make it easier to read if we need to.
@@ -31,7 +33,7 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
     private Paint mBackgroundColor, shapecolor, fruitcolor;
     private Context mContext;
     private boolean running, newswipe, newgame, killeditself;
-    private int height, width, mCoordinatesRange, x , y, score;
+    private int height, width, mCoordinatesRange, x , y, score, radius;
     private Coordinates fruit;
     private Snake mSnake;
     private Random mRandom, direction;
@@ -58,14 +60,15 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
         killeditself = false;
         height = getResources().getDisplayMetrics().heightPixels;
         width = getResources().getDisplayMetrics().widthPixels;
-        Log.d(TAG, "Height: " + height + "Width: " + width);
-        mRandom = new Random();
-        direction = new Random();
+        //Log.d(TAG, "Height: " + height + "Width: " + width);
+        mRandom = new Random(System.currentTimeMillis());
+        direction = new Random(System.currentTimeMillis());
         mCompat = new GestureDetectorCompat(getContext(), this);
         mSurfaceHolder = getHolder();
         mSurfaceHolder.addCallback(this);
         mCoordinatesRange = 10;
         score = 0;
+        radius = 10;
 
     }
 
@@ -105,11 +108,12 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
     @Override
     public void run() {
 
-        Canvas canvas;
         if(newgame)
         {
             fruit = fruitcoordinates();
             mSnake.initialPosition(width, height);
+            x = mSnake.getSnakebodycoordinates().get(0).getX();
+            y = mSnake.getSnakebodycoordinates().get(0).getY();
 
             mFragment.getActivity().runOnUiThread(new Runnable() {
                 @Override
@@ -118,9 +122,7 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
                 }
             });
 
-            x = mSnake.getSnakebodycoordinates().get(0).getX();
-            y = mSnake.getSnakebodycoordinates().get(0).getY();
-
+            /*Direction that the snake is going to go first*/
             switch (direction.nextInt(4)) {
                 case 0:
                     mDirection = Direction.up;
@@ -136,28 +138,27 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
                     break;
             }
 
-            newgame = false;
         }
-
-
 
         try {
             while(running) {
                 if (mSurfaceHolder.getSurface().isValid()) {
 
+                    Canvas canvas;
                     canvas = mSurfaceHolder.lockCanvas();
                     if(canvas == null)
                         break;
+
                     canvas.save();
                     canvas.drawPaint(mBackgroundColor);
-                    canvas.drawCircle(fruit.getX(), fruit.getY(), 20, fruitcolor);
+                    canvas.drawCircle(fruit.getX(), fruit.getY(), radius, fruitcolor);
 
-                    Log.d(TAG, "size: " + mSnake.getSnakebodycoordinates().size());
+                    //Log.d(TAG, "size: " + mSnake.getSnakebodycoordinates().size());
 
                     /*This part prevents the snake from turning back around. It looks like he's going through himself*/
                     if (mSnake.getSnakebodycoordinates().size() > 1 && newswipe) {
                         Coordinates prevpoint = mSnake.getSnakebodycoordinates().get(mSnake.getSnakebodycoordinates().size() - 2);
-                        Log.d(TAG, "x: " + x + " y: " + y + " prevx: " + prevpoint.getX() + "prevy: " + prevpoint.getY());
+                        //Log.d(TAG, "x: " + x + " y: " + y + " prevx: " + prevpoint.getX() + "prevy: " + prevpoint.getY());
 
                         if (mDirection == Direction.up) {
                             if (prevpoint.getX() == x && prevpoint.getY() == y - this.mCoordinatesRange) {
@@ -178,31 +179,45 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
 
                     }
 
-                    switch (mDirection) {
-                        case up:
-                            y -= this.mCoordinatesRange;
-                            break;
-                        case left:
-                            x -= this.mCoordinatesRange;
-                            break;
-                        case down:
-                            y += this.mCoordinatesRange;
-                            break;
-                        case right:
-                            x += this.mCoordinatesRange;
-                            break;
-                        default:
-                            break;
+                    Coordinates snakeHead = new Coordinates(x, y);
+                    if(newgame)
+                    {
+                        newgame = false;
+                    }
+                    else
+                    {
+                        switch (mDirection) {
+                            case up:
+                                y -= mCoordinatesRange;
+                                break;
+                            case left:
+                                x -= mCoordinatesRange;
+                                break;
+                            case down:
+                                y += mCoordinatesRange;
+                                break;
+                            case right:
+                                x += mCoordinatesRange;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        snakeHead = new Coordinates(x, y);
+                        mSnake.addSnakeCoordinates(x, y);
                     }
 
-                    Coordinates snakeHead = new Coordinates(x, y);
-                    mSnake.addSnakeCoordinates(x, y);
+
+
+
                     mSnake.checkSnakeLength();
 
-                    /* Puts the coordinates to make the snake body and also checks if the snake eats itself*/
+                    /* Puts the coordinates to make the snake body and also checks if the snake ate itself*/
                     if (mSnake.getSnakebodycoordinates().size() == 1) {
+
                         Coordinates point = mSnake.getSnakebodycoordinates().get(0);
-                        canvas.drawCircle(point.getX(), point.getY(), 10, shapecolor);
+                        canvas.drawCircle(point.getX(), point.getY(), radius, shapecolor);
+
                     } else {
                         for (int i = 0; i < mSnake.getSnakebodycoordinates().size(); i++) {
                             Coordinates coordinates1 = mSnake.getSnakebodycoordinates().get(i);
@@ -211,22 +226,11 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
                             if (snakeHead.getX() == coordinates1.getX() && snakeHead.getY() == coordinates1.getY() && i != mSnake.getSnakebodycoordinates().size() - 1)
                                 killeditself = true;
                         }
-
                     }
 
-                    if (snakeHead.getX() >= (fruit.getX() - 10) && snakeHead.getX() <= (fruit.getX() + 10) && snakeHead.getY() >= (fruit.getY() - 10) && snakeHead.getY() <= (fruit.getY() + 10)) {
-                        mSnake.addSnakeLength(5);
-                        score += 5;
+                    /* Checks if the snake ate the fruit. Might use circle arc coordinates for this check.*/
+                    eatfruit(snakeHead);
 
-                        mFragment.getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ((InfoInterface) mFragment).info(score);
-                            }
-                        });
-
-                        fruit = fruitcoordinates();
-                    }
 
                     canvas.restore();
                     mSurfaceHolder.unlockCanvasAndPost(canvas);
@@ -236,6 +240,7 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
                             snakeHead.getY() >= height && snakeHead.getX() >= 0 && snakeHead.getX() <= width || snakeHead.getX() >= width && snakeHead.getY() >= 0 && snakeHead.getY() <= height)
                         killeditself = true;
 
+                    /*If snake died, game over*/
                     if (killeditself) {
                         killeditself = false;
                         running = false;
@@ -249,6 +254,8 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
                     }
 
                 }
+
+                //Thread.sleep(500);
             }
         }
         catch (Exception e)
@@ -262,9 +269,11 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
     private Coordinates fruitcoordinates()
     {
         Coordinates coordinates = new Coordinates(mRandom.nextInt(width), mRandom.nextInt(height));
-        while((coordinates.getX() % this.mCoordinatesRange) != 0 && (coordinates.getY() % this.mCoordinatesRange) != 0)
+        while(coordinates.getX() <= this.mCoordinatesRange && coordinates.getX() >= (width - this.mCoordinatesRange) && coordinates.getY() <= this.mCoordinatesRange && coordinates.getY() >= (height - this.mCoordinatesRange))
         {
-            if((coordinates.getX() % this.mCoordinatesRange) != 0 && (coordinates.getY() % this.mCoordinatesRange) != 0)
+            coordinates.setX(mRandom.nextInt(width));
+            coordinates.setY(mRandom.nextInt(height));
+            /*if((coordinates.getX() % this.mCoordinatesRange) != 0 && (coordinates.getY() % this.mCoordinatesRange) != 0)
             {
                 coordinates.setX(mRandom.nextInt(width));
                 coordinates.setY(mRandom.nextInt(height));
@@ -276,10 +285,99 @@ public class PlayView extends SurfaceView implements GestureDetector.OnGestureLi
             else
             {
                 coordinates.setY(mRandom.nextInt(height));
-            }
+            }*/
         }
 
         return coordinates;
+    }
+
+    private void eatfruit(Coordinates snakeHead)
+    {
+        /*int Sangle1 = 0, Sangle2 = 0, Hangle1 = 0, Hangle2 = 0;
+        switch (mDirection) {
+            case up:
+                Sangle1 = 0;
+                Sangle2 = 180;
+                Hangle1 = 180;
+                Hangle2 = 360;
+                break;
+            case left:
+                Sangle1 = 90;
+                Sangle2 = 270;
+                Hangle1 = 270;
+                Hangle2 = 450;
+                break;
+            case down:
+                Sangle1 = 180;
+                Sangle2 = 360;
+                Hangle1 = 0;
+                Hangle2 = 180;
+                break;
+            case right:
+                Sangle1 = 270;
+                Sangle2 = 450;
+                Hangle1 = 180;
+                Hangle2 = 270;
+                break;
+            default:
+                break;
+        }
+
+        Map<Integer, Integer> angles = new HashMap<>();
+
+        for(int i = Sangle1; i <= Sangle2; i++)
+        {
+            int x = (int) (snakeHead.getX() + (radius / 2) * Math.cos(Math.toRadians(i % 360)));
+            int y = (int)(snakeHead.getY() - (radius / 2) * Math.sin(Math.toRadians(i % 360)));
+            //Log.d(TAG, String.format("i: %d snake x: %f y: %f head x: %d y: %d", i, x, y, snakeHead.getX(), snakeHead.getY()));
+
+            angles.put(new Integer(x), new Integer(y));
+        }
+
+        for(int i = Hangle1; i <= Hangle2; i++)
+        {
+            double x = (fruit.getX() + radius * Math.cos(Math.toRadians(i % 360)));
+            double y = (fruit.getY() - radius * Math.sin(Math.toRadians(i % 360)));
+
+
+            if(angles.get(new Integer(fruit.getX())) != null)
+            {
+                if(angles.get(new Integer(fruit.getX())).compareTo(new Integer(fruit.getY())) == y)
+                    Log.d(TAG, "did touch the fruit");
+                    //Log.d(TAG, String.format("i: %d fruit x: %f y: %f ", i, x, y));
+            }
+            if(angles.containsKey(new Double(x)) && angles.get(new Double(x)).intValue() == y)
+            {
+                mSnake.addSnakeLength(5);
+                score += 5;
+
+                mFragment.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((InfoInterface) mFragment).info(score);
+                    }
+                });
+
+                fruit = fruitcoordinates();
+                break;
+            }
+        }
+        stopgame();*/
+
+        if (snakeHead.getX() >= (fruit.getX() - radius) && snakeHead.getX() <= (fruit.getX() + radius) && snakeHead.getY() >= (fruit.getY() - radius) && snakeHead.getY() <= (fruit.getY() + radius))
+        {
+            mSnake.addSnakeLength(5);
+            score += 5;
+
+            mFragment.getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ((InfoInterface) mFragment).info(score);
+                }
+            });
+
+            fruit = fruitcoordinates();
+        }
     }
 
 
