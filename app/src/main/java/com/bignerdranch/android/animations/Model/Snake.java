@@ -11,7 +11,7 @@ public class Snake {
     public Snake()
     {
         mSnakeodyCoordinates= new ArrayList<>();
-        mSnakeLength = 20;
+        mSnakeLength = 50;
     }
 
     /*This method is used to position the snake in the middle of the screen*/
