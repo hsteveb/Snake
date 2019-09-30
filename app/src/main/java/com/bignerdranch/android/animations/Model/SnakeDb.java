@@ -2,6 +2,7 @@ package com.bignerdranch.android.animations.Model;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.bignerdranch.android.animations.Database.DbHelper;
@@ -25,15 +26,24 @@ public class SnakeDb {
     {
         mDbHelper = new DbHelper(context);
         mScores = new ArrayList<>();
-
-        for(int i = 0; i < 100; i++)
-        {
-            PlayerScore score = new PlayerScore("ABC", "1:00:00");
-            mScores.add(score);
-        }
     }
 
     public List<PlayerScore> getScores() {
+
+        mScores.clear();
+         mSQLiteDatabase = mDbHelper.getReadableDatabase();
+
+        String[] projection = {DbSchema.DbEntry._ID, DbSchema.DbEntry.NAME, DbSchema.DbEntry.SCORE};
+
+        Cursor cursor = mSQLiteDatabase.query(DbSchema.DbEntry.TABLE, projection, null, null, null, null, null);
+
+        cursor.moveToFirst();
+        while(!cursor.isAfterLast())
+        {
+            mScores.add(new PlayerScore(cursor.getString(cursor.getColumnIndex(DbSchema.DbEntry.NAME)), cursor.getString(cursor.getColumnIndex(DbSchema.DbEntry.SCORE))));
+            cursor.moveToNext();
+        }
+
         return mScores;
     }
 
@@ -41,10 +51,13 @@ public class SnakeDb {
     {
         mSQLiteDatabase = mDbHelper.getWritableDatabase();
 
+
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(DbSchema.DbEntry.NAME, name);
         contentValues.put(DbSchema.DbEntry.SCORE, Integer.toString(score));
+
+        if(mSQLiteDatabase.insert(DbSchema.DbEntry.TABLE, null, contentValues) != -1);
     }
 
     public static SnakeDb getInstance(Context context)
