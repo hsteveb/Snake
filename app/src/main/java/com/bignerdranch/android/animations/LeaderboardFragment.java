@@ -23,6 +23,7 @@ public class LeaderboardFragment extends Fragment implements View.OnClickListene
     private SnakeDb mSnakeDb;
     private TabLayout mTabLayout;
     private ImageButton mReturnImageButton;
+    private TextView mUnScores;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,6 +37,8 @@ public class LeaderboardFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.leaderboard_fragment, container, false);
+
+        mUnScores = v.findViewById(R.id.leaderboard_fragment_unavailable_scores_textview);
         mRecyclerView = v.findViewById(R.id.leaderboard_fragment_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(new RecyclerViewAdapter(mSnakeDb.getScores()));
@@ -44,6 +47,8 @@ public class LeaderboardFragment extends Fragment implements View.OnClickListene
         mTabLayout.setTabTextColors(getResources().getColor(R.color.darkRed2), getResources().getColor(R.color.darkRed2));
         mTabLayout.setClipToOutline(true);
         //mRecyclerView.invalidate();
+
+
 
         mReturnImageButton = v.findViewById(R.id.leaderboard_fragment_backbutton);
         mReturnImageButton.setOnClickListener(this);
@@ -57,6 +62,10 @@ public class LeaderboardFragment extends Fragment implements View.OnClickListene
         public RecyclerViewAdapter(List<PlayerScore> dummyScores)
         {
             mDummyScores = dummyScores;
+            if(dummyScores.size() != 0)
+            {
+                mUnScores.setVisibility(View.GONE);
+            }
         }
 
         @Override

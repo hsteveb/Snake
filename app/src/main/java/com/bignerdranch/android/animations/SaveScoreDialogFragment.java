@@ -18,6 +18,8 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.bignerdranch.android.animations.Model.SnakeDb;
+
 /* This fragment pops up whenever you lose the game and you want to save your name and score
  */
 public class SaveScoreDialogFragment extends DialogFragment{
@@ -71,7 +73,8 @@ public class SaveScoreDialogFragment extends DialogFragment{
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                Log.d(TAG, mplayerName.toString() + " " + score);
+                SnakeDb.getInstance(getContext()).addPlayerScore(mplayerName.getText().toString(), score);
             }
         });
         builder.setNegativeButton(R.string.cancel,null);

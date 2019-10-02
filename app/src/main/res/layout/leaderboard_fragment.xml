@@ -19,6 +19,7 @@
             android:layout_height="40dp"
             android:layout_centerVertical="true"
             android:layout_marginLeft="15dp"
+            android:backgroundTint="@android:color/holo_red_dark"
             android:tint="@color/white"
             android:src="?attr/homeAsUpIndicator"/>
 
@@ -68,6 +69,16 @@
             android:layout_below="@id/leaderboard_fragment_tablayout"
             android:layout_centerHorizontal="true"
             android:scrollbars="vertical"></android.support.v7.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/leaderboard_fragment_unavailable_scores_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/leaderboard_fragment_tablayout"
+            android:gravity="center_horizontal|center_vertical"
+            android:textSize="30sp"
+            android:textColor="@color/white"
+            android:text="Scores Unavailable" />
 
     </RelativeLayout>
 
